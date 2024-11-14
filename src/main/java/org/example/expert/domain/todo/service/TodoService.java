@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.example.expert.client.WeatherClient;
 import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
+import org.example.expert.domain.todo.dto.request.TodoSearchRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
+import org.example.expert.domain.todo.dto.response.TodoSearchResponse;
 import org.example.expert.domain.todo.entity.Todo;
 import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.dto.response.UserResponse;
@@ -14,6 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +80,18 @@ public class TodoService {
                 todo.getCreatedAt(),
                 todo.getModifiedAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TodoSearchResponse> searchTodos(Pageable pageable, TodoSearchRequest todoSearchRequest) {
+        String title = todoSearchRequest.getTitle();
+        String nickname = todoSearchRequest.getNickname();
+        LocalDate createdAfter = todoSearchRequest.getCreatedAfter();
+        LocalDate createdBefore = todoSearchRequest.getCreatedBefore();
+
+//        todoRepository.findAllWithComment();
+//        todoRepository.findAllWithManager();
+
+        return todoRepository.searchAll(pageable, title, nickname, createdAfter, createdBefore);
     }
 }
